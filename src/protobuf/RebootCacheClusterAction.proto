@@ -1,0 +1,22 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "RebootCacheClusterActionMessage";
+
+message RebootCacheClusterActionRequestMessage {
+    required bool typeId = 730;
+
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required string cacheClusterId = 3;
+    repeated string cacheNodeIdsToReboot = 4;
+
+}
+
+message RebootCacheClusterActionResultMessage {
+    required bool typeId = 731;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required CacheCluster cacheCluster = 3;
+}

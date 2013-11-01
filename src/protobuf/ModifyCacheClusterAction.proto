@@ -1,0 +1,31 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "ModifyCacheClusterActionMessage";
+
+message ModifyCacheClusterActionRequestMessage {
+    required bool typeId = 726;
+
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    optional bool   applyImmediately = 3;
+    optional bool   autoMinorVersionUpgrade = 4;
+    required string cacheClusterId = 5;
+    repeated string cacheNodeIdsToRemove = 6;
+    optional string cacheParameterGroupName = 7;
+    repeated string cacheSecurityGroupNames = 8;
+    optional string engineVersion = 9;
+    optional string notificationTopicArn = 10;
+    optional string notificationTopicStatus = 11;
+    optional uint32 numCacheNodes = 12;
+    optional string preferredMaintenanceWindow = 13;
+    repeated string securityGroupIds = 14;
+}
+
+message ModifyCacheClusterActionResultMessage {
+    required bool typeId = 727;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required CacheCluster cacheCluster = 3;
+}

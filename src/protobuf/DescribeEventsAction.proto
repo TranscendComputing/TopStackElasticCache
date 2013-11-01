@@ -1,0 +1,27 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "DescribeEventsActionMessage";
+
+message DescribeEventsActionRequestMessage {
+    required bool typeId = 724;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    optional uint32 duration = 3;
+    optional string endTime = 4;
+    optional string marker = 5;
+    optional uint32 maxRecords = 6;
+    optional string sourceIdentifier = 7;
+    optional string sourceType = 8;
+    optional string startTime = 9;
+
+}
+
+message DescribeEventsActionResultMessage {
+    required bool typeId = 725;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    repeated Event  events = 3;
+    required string marker = 4;
+}

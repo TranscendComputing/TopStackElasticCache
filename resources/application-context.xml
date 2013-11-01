@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	<!-- ==============================     -->
+    <bean id="serviceName" class="java.lang.String">
+        <constructor-arg value="elasticache"/>
+    </bean>
+    <!-- ==============================     -->
+	<!--  <import resource="ElasticacheQuery-context.xml"/> -->
+ 	<!--  <import resource="scheduler-context.xml" /> -->
+ 	<import resource="commonservices-context.xml" />
+
+	<!-- Run common annotations; e.g. PostConstruct/PreDestroy. -->
+    <context:annotation-config />
+    
+    <bean id="servicesPropertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+                <list>
+                        <value>classpath*:/*.properties</value>
+                        <value>file:${catalina.base}/conf/transcend.properties</value>
+                        <value>classpath*:/elasticache.ports</value>
+                </list>
+        </property>
+    </bean>
+    
+
+	<bean id="AuthorizeCacheSecurityGroupIngressAction"
+	    class="com.transcend.elasticache.actions.AuthorizeCacheSecurityGroupIngressAction"/>
+	<bean id="AuthorizeCacheSecurityGroupIngressActionWorker"
+	    class="com.transcend.elasticache.worker.AuthorizeCacheSecurityGroupIngressActionWorker"/> 
+	
+	<bean id="CreateCacheClusterAction"
+	    class="com.transcend.elasticache.actions.CreateCacheClusterAction"/>
+	<bean id="CreateCacheClusterActionWorker"
+	    class="com.transcend.elasticache.worker.CreateCacheClusterActionWorker"/> 
+	
+	<bean id="CreateCacheParameterGroupAction"
+	    class="com.transcend.elasticache.actions.CreateCacheParameterGroupAction"/>
+	<bean id="CreateCacheParameterGroupActionWorker"
+	    class="com.transcend.elasticache.worker.CreateCacheParameterGroupActionWorker"/> 
+	
+	<bean id="CreateCacheSecurityGroupAction"
+	    class="com.transcend.elasticache.actions.CreateCacheSecurityGroupAction"/>
+	<bean id="CreateCacheSecurityGroupActionWorker"
+	    class="com.transcend.elasticache.worker.CreateCacheSecurityGroupActionWorker"/> 
+	
+	<bean id="DeleteCacheClusterAction"
+	    class="com.transcend.elasticache.actions.DeleteCacheClusterAction"/>
+	<bean id="DeleteCacheClusterActionWorker"
+	    class="com.transcend.elasticache.worker.DeleteCacheClusterActionWorker"/> 
+	
+	<bean id="DeleteCacheParameterGroupAction"
+	    class="com.transcend.elasticache.actions.DeleteCacheParameterGroupAction"/>
+	<bean id="DeleteCacheParameterGroupActionWorker"
+	    class="com.transcend.elasticache.worker.DeleteCacheParameterGroupActionWorker"/> 
+	
+	<bean id="DeleteCacheSecurityGroupAction"
+	    class="com.transcend.elasticache.actions.DeleteCacheSecurityGroupAction"/>
+	<bean id="DeleteCacheSecurityGroupActionWorker"
+	    class="com.transcend.elasticache.worker.DeleteCacheSecurityGroupActionWorker"/> 
+	
+	<bean id="DescribeCacheClustersAction"
+	    class="com.transcend.elasticache.actions.DescribeCacheClustersAction"/>
+	<bean id="DescribeCacheClustersActionWorker"
+	    class="com.transcend.elasticache.worker.DescribeCacheClustersActionWorker"/> 
+	
+	<bean id="DescribeCacheParameterGroupsAction"
+	    class="com.transcend.elasticache.actions.DescribeCacheParameterGroupsAction"/>
+	<bean id="DescribeCacheParameterGroupsActionWorker"
+	    class="com.transcend.elasticache.worker.DescribeCacheParameterGroupsActionWorker"/> 
+	
+	<bean id="DescribeCacheParametersAction"
+	    class="com.transcend.elasticache.actions.DescribeCacheParametersAction"/>
+	<bean id="DescribeCacheParametersActionWorker"
+	    class="com.transcend.elasticache.worker.DescribeCacheParametersActionWorker"/> 
+	
+	<bean id="DescribeCacheSecurityGroupsAction"
+	    class="com.transcend.elasticache.actions.DescribeCacheSecurityGroupsAction"/>
+	<bean id="DescribeCacheSecurityGroupsActionWorker"
+	    class="com.transcend.elasticache.worker.DescribeCacheSecurityGroupsActionWorker"/> 
+	
+	<bean id="DescribeEngineDefaultParametersAction"
+	    class="com.transcend.elasticache.actions.DescribeEngineDefaultParametersAction"/>
+	<bean id="DescribeEngineDefaultParametersActionWorker"
+	    class="com.transcend.elasticache.worker.DescribeEngineDefaultParametersActionWorker"/> 
+	
+	<bean id="DescribeEventsAction"
+	    class="com.transcend.elasticache.actions.DescribeEventsAction"/>
+	<bean id="DescribeEventsActionWorker"
+	    class="com.transcend.elasticache.worker.DescribeEventsActionWorker"/> 
+	
+	<bean id="ModifyCacheClusterAction"
+	    class="com.transcend.elasticache.actions.ModifyCacheClusterAction"/>
+	<bean id="ModifyCacheClusterActionWorker"
+	    class="com.transcend.elasticache.worker.ModifyCacheClusterActionWorker"/> 
+	
+	<bean id="ModifyCacheParameterGroupAction"
+	    class="com.transcend.elasticache.actions.ModifyCacheParameterGroupAction"/>
+	<bean id="ModifyCacheParameterGroupActionWorker"
+	    class="com.transcend.elasticache.worker.ModifyCacheParameterGroupActionWorker"/> 
+	
+	<bean id="RebootCacheClusterAction"
+	    class="com.transcend.elasticache.actions.RebootCacheClusterAction"/>
+	<bean id="RebootCacheClusterActionWorker"
+	    class="com.transcend.elasticache.worker.RebootCacheClusterActionWorker"/> 
+	
+	<bean id="ResetCacheParameterGroupAction"
+	    class="com.transcend.elasticache.actions.ResetCacheParameterGroupAction"/>
+	<bean id="ResetCacheParameterGroupActionWorker"
+	    class="com.transcend.elasticache.worker.ResetCacheParameterGroupActionWorker"/> 
+	
+	<bean id="RevokeCacheSecurityGroupIngressAction"
+	    class="com.transcend.elasticache.actions.RevokeCacheSecurityGroupIngressAction"/>
+	<bean id="RevokeCacheSecurityGroupIngressActionWorker"
+	    class="com.transcend.elasticache.worker.RevokeCacheSecurityGroupIngressActionWorker"/> 
+
+
+    <bean id="elastiCacheAsync"
+        class="com.msi.tough.query.AsyncServiceImpl">
+        <constructor-arg>
+            <map>
+            	  <entry key="AuthorizeCacheSecurityGroupIngress" value-ref="AuthorizeCacheSecurityGroupIngressAction"/> 
+				  <entry key="CreateCacheCluster" value-ref="CreateCacheClusterAction"/> 
+				  <entry key="CreateCacheParameterGroup" value-ref="CreateCacheParameterGroupAction"/> 
+				  <entry key="CreateCacheSecurityGroup" value-ref="CreateCacheSecurityGroupAction"/> 
+				  <entry key="DeleteCacheCluster" value-ref="DeleteCacheClusterAction"/> 
+				  <entry key="DeleteCacheParameterGroup" value-ref="DeleteCacheParameterGroupAction"/> 
+				  <entry key="DeleteCacheSecurityGroup" value-ref="DeleteCacheSecurityGroupAction"/> 
+				  <entry key="DescribeCacheClusters" value-ref="DescribeCacheClustersAction"/> 
+				  <entry key="DescribeCacheParameterGroups" value-ref="DescribeCacheParameterGroupsAction"/> 
+				  <entry key="DescribeCacheParameters" value-ref="DescribeCacheParametersAction"/> 
+				  <entry key="DescribeCacheSecurityGroups" value-ref="DescribeCacheSecurityGroupsAction"/> 
+				  <entry key="DescribeEngineDefaultParameters" value-ref="DescribeEngineDefaultParametersAction"/> 
+				  <entry key="DescribeEvents" value-ref="DescribeEventsAction"/> 
+				  <entry key="ModifyCacheCluster" value-ref="ModifyCacheClusterAction"/> 
+				  <entry key="ModifyCacheParameterGroup" value-ref="ModifyCacheParameterGroupAction"/> 
+				  <entry key="RebootCacheCluster" value-ref="RebootCacheClusterAction"/> 
+				  <entry key="ResetCacheParameterGroup" value-ref="ResetCacheParameterGroupAction"/> 
+				  <entry key="RevokeCacheSecurityGroupIngress" value-ref="RevokeCacheSecurityGroupIngressAction"/> 
+            </map>
+            
+        </constructor-arg>
+    </bean> 
+       
+    <bean id="endpoint" class="java.lang.String">
+        <constructor-arg value="ActionIn"/>
+    </bean>
+    <bean id="rawEndpoint" class="java.lang.String">
+        <constructor-arg value="DirectToZMQEntry"/>
+    </bean>
+
+    <bean id="workflow" factory-method="getInstance"
+    class="com.msi.tough.workflow.core.MuleWorkflow">
+    </bean>
+
+    <bean id="recvEndpoint" class="java.lang.String">
+        <constructor-arg value="tcp://*:${elasticache.port}"/>
+    </bean>
+
+    <bean id="workflowReceiver" init-method="init" destroy-method="destroy"
+    class="com.msi.tough.workflow.core.WorkflowReceiver">
+    </bean>
+
+    <bean id="actionHelper" class="com.msi.tough.query.ActionHelper">
+    </bean>
+
+    <!-- Run common annotations; e.g. PostConstruct/PreDestroy. -->
+    <context:annotation-config />
+
+    <bean id="appctx" factory-method="getInstanceForInjection"
+        class="com.msi.tough.core.Appctx">
+        <property name="configuration" ref="configuration"/>
+    </bean>
+
+    <bean class="com.msi.tough.core.AppctxInjector"/>
+    
+    <bean id="hibernateUtil" class="com.msi.tough.core.HibernateUtil">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+    <!-- Redefine session factory; this app uses annotations for transactions -->
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="msiDS" />
+        <property name="configLocation" value="classpath:hibernate.cfg.xml"></property>
+        <property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"></property>
+        <property name="hibernateProperties">
+            <value>hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+                hibernate.cache.provider_class=org.hibernate.cache.NoCacheProvider
+                hibernate.show_sql=false
+                hibernate.hbm2ddl.auto=update
+            </value>
+        </property>
+    </bean>
+        
+
+	<!--  <bean id="schedulerInit" class="com.msi.tough.scheduler.SchedulerInit">
+        <property name="enabled" value="${scheduler.enabled}" />
+    </bean> -->
+    
+	<!-- Scheduler jobs -->
+	<!-- Specify a JobDetailBean and SimpleTriggerBean for each job needed, and pass in the Trigger bean to the jobs list.
+	Examples can be found in Monitor's application-context.xml-->
+	<bean id="jobs" class="java.util.ArrayList">
+		<constructor-arg>
+			<list></list>
+		</constructor-arg>
+	</bean>
+</beans>

@@ -1,0 +1,24 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "DescribeCacheSecurityGroupsActionMessage";
+
+message DescribeCacheSecurityGroupsActionRequestMessage {
+    required bool typeId = 720;
+
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    optional string cacheSecurityGroupName = 3;
+    optional string marker = 4;
+    optional uint32 maxRecords = 5;
+
+}
+
+message DescribeCacheSecurityGroupsActionResultMessage {
+    required bool typeId = 721;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    repeated CacheSecurityGroup cacheSecurityGroups = 3;
+    required string marker = 4;
+}

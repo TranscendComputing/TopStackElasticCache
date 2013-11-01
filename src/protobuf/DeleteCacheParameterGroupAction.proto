@@ -1,0 +1,21 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "DeleteCacheParameterGroupActionMessage";
+
+message DeleteCacheParameterGroupActionRequestMessage {
+    required bool typeId = 710;
+
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required string cacheParameterGroupName = 3;
+
+}
+
+message DeleteCacheParameterGroupActionResultMessage {
+    required bool typeId = 711;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+
+}

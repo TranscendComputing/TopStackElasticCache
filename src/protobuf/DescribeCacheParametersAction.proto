@@ -1,0 +1,26 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "DescribeCacheParametersActionMessage";
+
+message DescribeCacheParametersActionRequestMessage {
+    required bool typeId = 718;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required string cacheParameterGroupName = 3;
+    optional string marker = 4;
+    optional uint32 maxRecords = 5;
+    optional string source = 6;
+
+
+}
+
+message DescribeCacheParametersActionResultMessage {
+    required bool typeId = 719;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    repeated CacheNodeTypeSpecificParameter cacheNodeTypeSpecificParameters = 3;
+    required string marker = 4;
+    repeated Parameter parameters = 5;
+}

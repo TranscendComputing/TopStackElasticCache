@@ -1,0 +1,22 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "RevokeCacheSecurityGroupIngressActionMessage";
+
+message RevokeCacheSecurityGroupIngressActionRequestMessage {
+    required bool typeId = 734;
+
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required string cacheSecurityGroupName = 3;
+    required string ec2SecurityGroupName = 4;
+    required string ec2SecurityGroupOwnerId = 5;
+}
+
+message RevokeCacheSecurityGroupIngressActionResultMessage {
+    required bool typeId = 735;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required CacheSecurityGroup cacheSecurityGroup = 3;
+}

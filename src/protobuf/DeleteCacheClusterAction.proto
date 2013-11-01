@@ -1,0 +1,21 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "DeleteCacheClusterActionMessage";
+
+message DeleteCacheClusterActionRequestMessage {
+    required bool typeId = 708;
+
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+	required string cacheClusterId = 3;
+}
+
+message DeleteCacheClusterActionResultMessage {
+    required bool typeId = 709;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required CacheCluster cacheCluster = 3;
+
+}

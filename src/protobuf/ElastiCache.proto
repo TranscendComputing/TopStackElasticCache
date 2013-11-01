@@ -1,0 +1,127 @@
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "ElastiCacheMessage";
+
+message EC2SecurityGroup {
+    optional string ec2SecurityGroupName = 1;
+    optional string ec2SecurityGroupOwnerId = 2;
+    optional string status = 3;
+}
+
+message CacheCluster {
+	optional bool   AutoMinorVersionUpgrade = 1;
+	optional string cacheClusterCreateTime = 2;
+	optional string cacheClusterId = 3;
+	optional string cacheClusterStatus = 4;
+	optional string cacheNodeType = 5;
+	repeated CacheNode cacheNodes = 6;
+	optional CacheParameterGroupStatus cacheParameterGroup = 7;
+	repeated CacheSecurityGroupMembership cacheSecurityGroups = 8;
+	optional string cacheSubnetGroupName = 9;
+	optional string clientDownloadLandingPage = 10;
+	optional Endpoint configurationEndpoint = 11;
+	optional string engine = 12;
+	optional string engineVersion = 13;
+	optional NotificationConfiguration notificationConfiguration = 14;
+	optional uint32 numCacheNodes = 15;
+	optional PendingModifiedValues pendingModifiedValues = 16;
+	optional string preferredAvailabilityZone = 17;
+	optional string preferredMaintenanceWindow = 18;
+	optional string replicationGroupId = 19;
+	repeated SecurityGroupMembership securityGroups = 20;
+}
+
+message CacheNode {
+	optional string cacheNodeCreateTime = 1;
+	optional string cacheNodeId = 2;
+	optional string cacheNodeStatus = 3;
+	optional Endpoint endpoint = 4;
+	optional string parameterGroupStatus = 5;
+	optional string sourceCacheNodeId = 6;
+}
+
+message CacheNodeTypeSpecificParameter {
+	optional string allowedValues = 1;
+	repeated CacheNodeTypeSpecificValue cacheNodeTypeSpecificValues = 2;
+	optional string dataType = 3;
+	optional string description = 4;
+	optional bool   isModifiable = 5;
+	optional string minimumEngineVersion = 6;
+	optional string parameterName = 7;
+	optional string source = 8;	
+}
+
+message CacheNodeTypeSpecificValue {
+	optional string cacheNodeType = 1;
+	optional string value = 2;
+}
+
+message CacheParameterGroup {
+	optional string cacheParameterGroupFamily = 1;
+	optional string cacheParameterGroupName = 2;
+	optional string description = 3;
+}
+
+message CacheParameterGroupStatus {
+	repeated string cacheNodeIdsToReboot = 1;
+	optional string cacheParameterGroupName = 2;
+	optional string parameterApplyStatus = 3;
+}
+
+message CacheSecurityGroup {
+	optional string cacheSecurityGroupName = 1;
+	optional string description = 2;
+	repeated EC2SecurityGroup ec2SecurityGroups = 3;
+	optional string ownerId = 4;
+}
+
+message CacheSecurityGroupMembership {
+	optional string cacheSecurityGroupName = 1;
+	optional string status = 2;	
+}
+
+message Endpoint {	
+	optional string address = 1;
+	optional uint32 port = 2;
+}
+
+message Event {
+	optional string date = 1;
+	optional string message = 2;
+	optional string sourceIdentifier = 3;
+	optional string  sourceType = 4;
+}
+
+message NotificationConfiguration {	
+	optional string topicArn = 1;
+	optional string topicStatus = 2;
+}
+
+
+message Parameter {
+	optional string allowedValues = 1;
+	optional string dataType = 2;
+	optional string description = 3;
+	optional bool   isModifiable = 4;
+	optional string minimumEngineVersion = 5;
+	optional string parameterName = 6;
+	optional string parameterValue = 7;
+	optional string source = 8;
+}
+
+message ParameterNameValue {
+	optional string parameterName = 1;
+	optional string parameterValue = 2;
+}
+
+message PendingModifiedValues {
+	repeated string cacheNodeIdsToRemove = 1;
+	optional string engineVersion = 2;
+	optional uint32 numCacheNodes = 3;
+}
+
+message SecurityGroupMembership {
+	optional string securityGroupId = 1;
+	optional string status = 2;
+}

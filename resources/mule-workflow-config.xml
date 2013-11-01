@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:spring="http://www.springframework.org/schema/beans"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:zmq="http://www.mulesoft.org/schema/mule/zeromq"
+      xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+      xmlns:protobuf="http://www.mulesoft.org/schema/mule/protobuf"
+      xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+      xsi:schemaLocation="http://wPutww.springframework.org/schema/beans
+      classpath:org/springframework/beans/factory/xml/spring-beans-3.0.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/zeromq http://www.mulesoft.org/schema/mule/zeromq/1.1-SNAPSHOT/mule-zeromq.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/protobuf http://www.mulesoft.org/schema/mule/protobuf/current/mule-protobuf.xsd
+        http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+        http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+    <description>
+    This configuration uses REST services and ZeroMQ endpoints to receive
+    requests.
+    </description>
+
+    <configuration>
+    <default-threading-profile maxThreadsActive="3"/>
+    </configuration>
+
+    <custom-transformer name="ExceptionToString" class="com.msi.tough.workflow.core.ExceptionToString"/>
+    <custom-transformer name="ExceptionToErrorResponse" class="com.msi.tough.workflow.core.ExceptionToErrorResponse"/>
+    <custom-transformer name="HttpRequestToParameter" class="org.mule.transport.servlet.transformers.HttpRequestToParameter"/>
+    <custom-transformer name="ObjectToString" class="org.mule.transformer.simple.ObjectToString"/>
+
+    <spring:bean id="muleWorkflow" factory-method="getInstance"
+    class="com.msi.tough.workflow.core.MuleWorkflow">
+    </spring:bean>
+    
+    <spring:bean id="zmqReturnProcessor" factory-method="getInstance"
+    	destroy-method="destroy"
+    	class="com.msi.tough.workflow.core.RemoteWorkflowResponder">
+    </spring:bean>
+
+    <zmq:connector name="ZMQ"/>
+
+    <!-- Begin zero MQ versions -->
+
+	<!--
+    <flow name="DirectToZMQ">
+        <inbound-endpoint ref="DirectToZMQIn"/>
+        <zmq:outbound-endpoint address="tcp://*:${elasticache.port}" socket-operation="connect" exchange-pattern="push"/>
+    </flow>
+    -->
+
+    <flow name="ZMQEntry">
+        <inbound-endpoint ref="DirectToZMQEntry"/>
+        <set-session-variable variableName="returnAddress" value="#[payload[1]]"/>
+        <expression-transformer evaluator="groovy" expression="payload[0]"/>
+        <first-successful>
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.AuthorizeCacheSecurityGroupIngressActionMessage$AuthorizeCacheSecurityGroupIngressActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.CreateCacheClusterActionMessage$CreateCacheClusterActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.CreateCacheParameterGroupActionMessage$CreateCacheParameterGroupActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.CreateCacheSecurityGroupActionMessage$CreateCacheSecurityGroupActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DeleteCacheClusterActionMessage$DeleteCacheClusterActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DeleteCacheParameterGroupActionMessage$DeleteCacheParameterGroupActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DeleteCacheSecurityGroupActionMessage$DeleteCacheSecurityGroupActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DescribeCacheClustersActionMessage$DescribeCacheClustersActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DescribeCacheParameterGroupsActionMessage$DescribeCacheParameterGroupsActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DescribeCacheParametersActionMessage$DescribeCacheParametersActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DescribeCacheSecurityGroupsActionMessage$DescribeCacheSecurityGroupsActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DescribeEngineDefaultParametersActionMessage$DescribeEngineDefaultParametersActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.DescribeEventsActionMessage$DescribeEventsActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.ModifyCacheClusterActionMessage$ModifyCacheClusterActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.ModifyCacheParameterGroupActionMessage$ModifyCacheParameterGroupActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.RebootCacheClusterActionMessage$RebootCacheClusterActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.ResetCacheParameterGroupActionMessage$ResetCacheParameterGroupActionRequestMessage"/> 
+			  <protobuf:deserialize protobufClass="com.transcend.elasticache.message.RevokeCacheSecurityGroupIngressActionMessage$RevokeCacheSecurityGroupIngressActionRequestMessage"/> 
+			
+        </first-successful>
+        <log-component />
+        <flow-ref name="ActionEntry"/>
+        <catch-exception-strategy>
+            <outbound-endpoint ref="SystemErrorHandlerIn"/>
+        </catch-exception-strategy>
+    </flow>
+    
+
+    <flow name="ActionEntry">
+        <inbound-endpoint ref="ActionIn"/>
+        <log-component />
+        <choice>            
+			 <when expression="payload instanceof com.transcend.elasticache.message.AuthorizeCacheSecurityGroupIngressActionMessage$AuthorizeCacheSecurityGroupIngressActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="AuthorizeCacheSecurityGroupIngressActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.CreateCacheClusterActionMessage$CreateCacheClusterActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="CreateCacheClusterActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.CreateCacheParameterGroupActionMessage$CreateCacheParameterGroupActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="CreateCacheParameterGroupActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.CreateCacheSecurityGroupActionMessage$CreateCacheSecurityGroupActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="CreateCacheSecurityGroupActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DeleteCacheClusterActionMessage$DeleteCacheClusterActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DeleteCacheClusterActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DeleteCacheParameterGroupActionMessage$DeleteCacheParameterGroupActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DeleteCacheParameterGroupActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DeleteCacheSecurityGroupActionMessage$DeleteCacheSecurityGroupActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DeleteCacheSecurityGroupActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DescribeCacheClustersActionMessage$DescribeCacheClustersActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DescribeCacheClustersActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DescribeCacheParameterGroupsActionMessage$DescribeCacheParameterGroupsActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DescribeCacheParameterGroupsActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DescribeCacheParametersActionMessage$DescribeCacheParametersActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DescribeCacheParametersActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DescribeCacheSecurityGroupsActionMessage$DescribeCacheSecurityGroupsActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DescribeCacheSecurityGroupsActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DescribeEngineDefaultParametersActionMessage$DescribeEngineDefaultParametersActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DescribeEngineDefaultParametersActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.DescribeEventsActionMessage$DescribeEventsActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="DescribeEventsActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.ModifyCacheClusterActionMessage$ModifyCacheClusterActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="ModifyCacheClusterActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.ModifyCacheParameterGroupActionMessage$ModifyCacheParameterGroupActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="ModifyCacheParameterGroupActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.RebootCacheClusterActionMessage$RebootCacheClusterActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="RebootCacheClusterActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.ResetCacheParameterGroupActionMessage$ResetCacheParameterGroupActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="ResetCacheParameterGroupActionRequest"/>
+			</when> 
+			 <when expression="payload instanceof com.transcend.elasticache.message.RevokeCacheSecurityGroupIngressActionMessage$RevokeCacheSecurityGroupIngressActionRequestMessage" evaluator="groovy">
+			   <flow-ref name="RevokeCacheSecurityGroupIngressActionRequest"/>
+			</when> 
+            <otherwise>
+                <flow-ref name="SystemErrorHandler"/>
+            </otherwise>
+        </choice>
+    </flow>
+  
+  
+	<!-- Request/Response flow for AuthorizeCacheSecurityGroupIngressAction -->
+	
+	<flow name="AuthorizeCacheSecurityGroupIngressActionRequest">
+	    <component>
+	        <spring-object bean="AuthorizeCacheSecurityGroupIngressActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="AuthorizeCacheSecurityGroupIngressActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="AuthorizeCacheSecurityGroupIngressActionResponse" >
+	    <component>
+	        <spring-object bean="AuthorizeCacheSecurityGroupIngressAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for CreateCacheClusterAction -->
+	
+	<flow name="CreateCacheClusterActionRequest">
+	    <component>
+	        <spring-object bean="CreateCacheClusterActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="CreateCacheClusterActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="CreateCacheClusterActionResponse" >
+	    <component>
+	        <spring-object bean="CreateCacheClusterAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for CreateCacheParameterGroupAction -->
+	
+	<flow name="CreateCacheParameterGroupActionRequest">
+	    <component>
+	        <spring-object bean="CreateCacheParameterGroupActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="CreateCacheParameterGroupActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="CreateCacheParameterGroupActionResponse" >
+	    <component>
+	        <spring-object bean="CreateCacheParameterGroupAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for CreateCacheSecurityGroupAction -->
+	
+	<flow name="CreateCacheSecurityGroupActionRequest">
+	    <component>
+	        <spring-object bean="CreateCacheSecurityGroupActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="CreateCacheSecurityGroupActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="CreateCacheSecurityGroupActionResponse" >
+	    <component>
+	        <spring-object bean="CreateCacheSecurityGroupAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DeleteCacheClusterAction -->
+	
+	<flow name="DeleteCacheClusterActionRequest">
+	    <component>
+	        <spring-object bean="DeleteCacheClusterActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DeleteCacheClusterActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DeleteCacheClusterActionResponse" >
+	    <component>
+	        <spring-object bean="DeleteCacheClusterAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DeleteCacheParameterGroupAction -->
+	
+	<flow name="DeleteCacheParameterGroupActionRequest">
+	    <component>
+	        <spring-object bean="DeleteCacheParameterGroupActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DeleteCacheParameterGroupActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DeleteCacheParameterGroupActionResponse" >
+	    <component>
+	        <spring-object bean="DeleteCacheParameterGroupAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DeleteCacheSecurityGroupAction -->
+	
+	<flow name="DeleteCacheSecurityGroupActionRequest">
+	    <component>
+	        <spring-object bean="DeleteCacheSecurityGroupActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DeleteCacheSecurityGroupActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DeleteCacheSecurityGroupActionResponse" >
+	    <component>
+	        <spring-object bean="DeleteCacheSecurityGroupAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DescribeCacheClustersAction -->
+	
+	<flow name="DescribeCacheClustersActionRequest">
+	    <component>
+	        <spring-object bean="DescribeCacheClustersActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DescribeCacheClustersActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DescribeCacheClustersActionResponse" >
+	    <component>
+	        <spring-object bean="DescribeCacheClustersAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DescribeCacheParameterGroupsAction -->
+	
+	<flow name="DescribeCacheParameterGroupsActionRequest">
+	    <component>
+	        <spring-object bean="DescribeCacheParameterGroupsActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DescribeCacheParameterGroupsActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DescribeCacheParameterGroupsActionResponse" >
+	    <component>
+	        <spring-object bean="DescribeCacheParameterGroupsAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DescribeCacheParametersAction -->
+	
+	<flow name="DescribeCacheParametersActionRequest">
+	    <component>
+	        <spring-object bean="DescribeCacheParametersActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DescribeCacheParametersActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DescribeCacheParametersActionResponse" >
+	    <component>
+	        <spring-object bean="DescribeCacheParametersAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DescribeCacheSecurityGroupsAction -->
+	
+	<flow name="DescribeCacheSecurityGroupsActionRequest">
+	    <component>
+	        <spring-object bean="DescribeCacheSecurityGroupsActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DescribeCacheSecurityGroupsActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DescribeCacheSecurityGroupsActionResponse" >
+	    <component>
+	        <spring-object bean="DescribeCacheSecurityGroupsAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DescribeEngineDefaultParametersAction -->
+	
+	<flow name="DescribeEngineDefaultParametersActionRequest">
+	    <component>
+	        <spring-object bean="DescribeEngineDefaultParametersActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DescribeEngineDefaultParametersActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DescribeEngineDefaultParametersActionResponse" >
+	    <component>
+	        <spring-object bean="DescribeEngineDefaultParametersAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for DescribeEventsAction -->
+	
+	<flow name="DescribeEventsActionRequest">
+	    <component>
+	        <spring-object bean="DescribeEventsActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="DescribeEventsActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="DescribeEventsActionResponse" >
+	    <component>
+	        <spring-object bean="DescribeEventsAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for ModifyCacheClusterAction -->
+	
+	<flow name="ModifyCacheClusterActionRequest">
+	    <component>
+	        <spring-object bean="ModifyCacheClusterActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="ModifyCacheClusterActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="ModifyCacheClusterActionResponse" >
+	    <component>
+	        <spring-object bean="ModifyCacheClusterAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for ModifyCacheParameterGroupAction -->
+	
+	<flow name="ModifyCacheParameterGroupActionRequest">
+	    <component>
+	        <spring-object bean="ModifyCacheParameterGroupActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="ModifyCacheParameterGroupActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="ModifyCacheParameterGroupActionResponse" >
+	    <component>
+	        <spring-object bean="ModifyCacheParameterGroupAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for RebootCacheClusterAction -->
+	
+	<flow name="RebootCacheClusterActionRequest">
+	    <component>
+	        <spring-object bean="RebootCacheClusterActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="RebootCacheClusterActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="RebootCacheClusterActionResponse" >
+	    <component>
+	        <spring-object bean="RebootCacheClusterAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for ResetCacheParameterGroupAction -->
+	
+	<flow name="ResetCacheParameterGroupActionRequest">
+	    <component>
+	        <spring-object bean="ResetCacheParameterGroupActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="ResetCacheParameterGroupActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="ResetCacheParameterGroupActionResponse" >
+	    <component>
+	        <spring-object bean="ResetCacheParameterGroupAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	<!-- Request/Response flow for RevokeCacheSecurityGroupIngressAction -->
+	
+	<flow name="RevokeCacheSecurityGroupIngressActionRequest">
+	    <component>
+	        <spring-object bean="RevokeCacheSecurityGroupIngressActionWorker"/>
+	    </component>
+	
+	    <flow-ref name="RevokeCacheSecurityGroupIngressActionResponse"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow>
+	
+	<flow name="RevokeCacheSecurityGroupIngressActionResponse" >
+	    <component>
+	        <spring-object bean="RevokeCacheSecurityGroupIngressAction"/>
+	    </component>
+	
+	    <flow-ref name="ClientResponder"/>
+	    <!-- Route unexpected errors to separate error handler -->
+	    <catch-exception-strategy>
+	        <outbound-endpoint ref="SystemErrorHandlerIn"/>
+	    </catch-exception-strategy>
+	</flow> 
+	
+	     <!-- General system flows -->
+    <flow name="ZMQResponder">
+        <log-component />
+        <processor ref="zmqReturnProcessor"/>
+    </flow>
+    
+    <flow name="ClientResponder">
+        <component>
+            <spring-object bean="elastiCacheAsync"/>
+        </component>
+    </flow>
+
+    <model>
+        <service name="UserErrorHandler">
+            <inbound>
+                <vm:inbound-endpoint path="userErrorHandler" responseTransformer-refs="ExceptionToString" exchange-pattern="request-response"/>
+            </inbound>
+        </service>
+    </model>
+
+    <!-- Handle any unexpected errors. Errors could also be routed elsewhere,
+        e.g. into an error file, send via email to a list, stored in a database, etc. -->
+    <flow name="SystemErrorHandler">
+        <inbound-endpoint ref="SystemErrorHandlerIn"/>
+
+        <flow-ref name="ClientResponder"/>
+    </flow>
+
+  
+
+</mule>

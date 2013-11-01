@@ -1,0 +1,23 @@
+import "ElastiCache.proto";
+package topstack_ElastiCache;
+
+option java_package = "com.transcend.elasticache.message";
+option java_outer_classname = "AuthorizeCacheSecurityGroupIngressActionMessage";
+
+message AuthorizeCacheSecurityGroupIngressActionRequestMessage {
+    required bool typeId = 700;
+
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required string cacheSecurityGroupName = 3;
+    required string ec2SecurityGroupName = 4;
+    required string ec2SecurityGroupOwnerId = 5;
+
+}
+
+message AuthorizeCacheSecurityGroupIngressActionResultMessage {
+    required bool typeId = 701;
+    required string requestId = 1;
+    required string callerAccessKey = 2;
+    required CacheSecurityGroup cacheSecurityGroup = 3;
+}

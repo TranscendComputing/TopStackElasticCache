@@ -1,0 +1,8 @@
+*~
+.DS_Store
+/build
+/bin
+/target
+/*.properties
+/src/com/transcend/elasticache/message/*
+/src/com/transcend/elasticache/message/

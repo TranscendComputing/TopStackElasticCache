@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" output="target/test-classes" path="test/resources"/>
+	<classpathentry kind="src" output="target/test-classes" path="test/java"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/TopStackResources"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/TopStackCore"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/javalibs">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/dasein-cloud-openstack"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/TopStackCore/build/external/lib/aws-java-sdk-1.3.29.jar"/>
+	<classpathentry kind="lib" path="/root/.m2/repository/mysql/mysql-connector-java/5.1.17/mysql-connector-java-5.1.17.jar"/>
+	<classpathentry kind="lib" path="/root/.m2/repository/org/hibernate/hibernate-core/3.6.0.Final/hibernate-core-3.6.0.Final.jar" sourcepath="/root/.m2/repository/org/hibernate/hibernate-core/3.6.0.Final/hibernate-core-3.6.0.Final-sources.jar"/>
+	<classpathentry kind="lib" path="/TopStackCore/build/external/lib/commons-codec-1.6.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TopStackScheduler"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TopStackCompute"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TopStackDNS53"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
